@@ -59,6 +59,101 @@ Pass `--no-gates` to skip all three (placeholders are still listed in the final 
 
 No ask, no CTA, no roadmap pitch. The product is the star.
 
+## Setup
+
+### 1. Install dependencies
+
+```bash
+node -v        # must be 18+
+npm -v         # must be 8+
+```
+
+Install Remotion in an empty directory:
+
+```bash
+npx create-video@latest --blank board-video-work
+cd board-video-work
+npm install
+```
+
+### 2. Configure a TTS provider
+
+Set one of the following environment variables before running:
+
+```bash
+# ElevenLabs (recommended)
+export ELEVENLABS_API_KEY=your_key_here
+
+# OpenAI
+export OPENAI_API_KEY=your_key_here
+
+# Local (Coqui, Piper, etc.) — set a command the skill can shell out to
+export TTS_COMMAND="piper --model en_US-lessac-medium --output_file"
+```
+
+If none is set the skill will prompt you to choose.
+
+### 3. Install ffprobe
+
+macOS:
+```bash
+brew install ffmpeg
+```
+
+Ubuntu / Debian:
+```bash
+sudo apt install ffmpeg
+```
+
+Windows: download from [ffmpeg.org](https://ffmpeg.org/download.html) and add `bin/` to PATH.
+
+### 4. Install this skill
+
+Place `SKILL.md` in your skills directory (the exact path depends on your agent harness). Then invoke it with `/board-video`.
+
+---
+
+## Process
+
+```
+/board-video [path or URL]
+        │
+        ▼
+  1. Intake ──────── reads codebase, docs, routes, metrics
+        │
+        ▼
+  Gate 1 ─────────── brief + facts, missing numbers → you approve
+        │
+        ▼
+  2. Structure ───── scenes and timings locked from approved brief
+        │
+        ▼
+  3. Script + storyboard
+        │
+        ▼
+  Gate 2 ─────────── script (word count + runtime) + storyboard → you approve
+        │
+        ▼
+  4. Build in Remotion
+        │   ├─ scaffold project (if none exists)
+        │   ├─ one component per scene
+        │   ├─ capture real UI (render / headless browser / screenshots)
+        │   └─ generate TTS narration, sync durations
+        │
+        ▼
+  5. Check ──────────  stills at every scene midpoint + transition
+        │              contrast, overflow, sensitive data, subtitle sync
+        ▼
+  Gate 3 ─────────── contact-sheet stills → you approve
+        │
+        ▼
+  6. Render ──────── board-video.mp4 + all output files delivered
+```
+
+Each gate is a hard stop — the skill waits for your reply before continuing. Pass `--no-gates` to run straight through (placeholders are still flagged in the final message).
+
+---
+
 ## Requirements
 
 - Node.js 18+
